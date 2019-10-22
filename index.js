@@ -1,4 +1,4 @@
-const PARTICLE_SPEED = 1;	// pixels per second
+const PARTICLE_SPEED = 2;	// pixels per second
 const NUM_PARTICLES = 1000;
 
 var stage = new Konva.Stage({
@@ -44,7 +44,7 @@ function makeFixed(coords) {
 		y: coords.y,
 		width: 1,
 		height: 1,
-		fill: 'black',
+		fill: '#FFFFFF',
 	});
 	addToAdjacencyMap(Math.floor(coords.x), Math.floor(coords.y));
 	return fixed;
@@ -58,7 +58,6 @@ function createWalkingParticle(layer) {
 
 	layer.add(particle);
 	randomWalk(particle, layer);
-	layer.draw();
 }
 
 function randomWalk(particle, layer) {
@@ -70,11 +69,10 @@ function randomWalk(particle, layer) {
 
 		// Check for intersection with fixed
 		if (isFixedAdjacent(Math.floor(pos.x), Math.floor(pos.y))) {
-			// anim.stop();
-			particle.x(Math.random() * stage.width());
-			particle.y(Math.random() * stage.height());
+			anim.stop();
 			layer.add(makeFixed(pos));
-			// createWalkingParticle(layer);
+			createWalkingParticle(layer);
+			particle.destroy();
 			layer.draw();
 			return;
 		}
