@@ -1,5 +1,5 @@
 const PARTICLE_SPEED = 2;	// pixels per second
-const NUM_PARTICLES = 1000;
+const NUM_PARTICLES = 10000;
 
 var stage = new Konva.Stage({
 	container: 'root',
@@ -28,7 +28,8 @@ function initParticles(layer) {
 	}));
 
 	for (let i = 0; i < NUM_PARTICLES; i++) {
-		createWalkingParticle(layer);
+		// createWalkingParticle(layer);
+		createUnrenderedWalker();
 	}
 }
 
@@ -54,26 +55,23 @@ function makeFixed(coords) {
 	return fixed;
 }
 
-function createWalkingParticle(layer) {
+function createWalkingParticle(layer, options) {
 	const particle = makeParticle({
 		x: Math.random() * stage.width(),
 		y: Math.random() * stage.height(),
-	});
-
-	layer.add(particle);
-	randomWalk(particle, layer);
-}
-
-function createWalkingGreenParticle(layer, options) {
-	const particle = makeParticle({
-		x: Math.random() * stage.width(),
-		y: Math.random() * stage.height(),
-		fill: 'green',
 		...options,
 	});
 
 	layer.add(particle);
-	randomWalk(particle, layer, {fill: 'red',});
+	randomWalk(particle, layer, { fill: 'green' });
+}
+
+function createUnrenderedWalker() {
+	const walker = {
+		x: Math.random() * stage.width(),
+		y: Math.random() * stage.height(),
+	};
+	startUnrenderedWalk(walker);
 }
 
 function randomWalk(particle, layer, options) {
@@ -87,7 +85,7 @@ function randomWalk(particle, layer, options) {
 		if (isFixedAdjacent(Math.floor(pos.x), Math.floor(pos.y))) {
 			anim.stop();
 			layer.add(makeFixed(pos));
-			createWalkingGreenParticle(layer, options);
+			createWalkingParticle(layer, options);
 			particle.destroy();
 			layer.draw();
 			return;
@@ -111,6 +109,40 @@ function randomWalk(particle, layer, options) {
 	}, layer);
 	anim.start();
 }
+
+function startUnrenderedWalk(walker, options) {
+	function unrenderedWalk() {
+		if (isFixedAdjacent(Math.floor(walker.x), Math.floor(walker.y))) {
+			layer.add(makeFixed(walker));
+			// createWalkingGreenParticle(layer, options);
+			// clearInterval(unrenderedWalk);
+			walker.x = Math.random() * stage.width();
+			walker.y = Math.random() * stage.height();
+
+			layer.draw();
+			return;
+		}
+
+		const xrand = Math.random();
+		const yrand = Math.random();
+
+		if (xrand < 0.5) {
+			walker.x = stayInsideStage(walker.x + PARTICLE_SPEED, 'x')
+		} else {
+			walker.x = stayInsideStage(walker.x - PARTICLE_SPEED, 'x')
+		}
+
+		if (yrand < 0.5) {
+			walker.y = stayInsideStage(walker.y + PARTICLE_SPEED, 'y')
+		} else {
+			walker.y = stayInsideStage(walker.y - PARTICLE_SPEED, 'y')
+		}
+	}
+
+	setInterval(unrenderedWalk, 10);
+}
+
+
 
 function addToAdjacencyMap(x, y) {
 	const adj = [
