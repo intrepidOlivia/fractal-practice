@@ -13,28 +13,32 @@ var layer = new Konva.Layer();
 // nested represent y coords
 const adjacencyMap = {};
 
-// Initialize with one fixed particle
-layer.add(makeFixed({
-	x: stage.width() / 2,
-	y: stage.height() / 2,
-}));
-
-for (let i = 0; i < NUM_PARTICLES; i++) {
-	createWalkingParticle(layer);
-}
+initParticles(layer);
 
 stage.add(layer);
 layer.draw();
 
 /** FUNCTIONS **/
 
-function makeParticle(coords) {
+function initParticles(layer) {
+	// Initialize with one fixed particle
+	layer.add(makeFixed({
+		x: stage.width() / 2,
+		y: stage.height() / 2,
+	}));
+
+	for (let i = 0; i < NUM_PARTICLES; i++) {
+		createWalkingParticle(layer);
+	}
+}
+
+function makeParticle(options) {
 	return new Konva.Rect({
-		x: coords.x,
-		y: coords.y,
+		x: options.x,
+		y: options.y,
 		width: 1,
 		height: 1,
-		fill: 'blue',
+		fill: options.fill || 'blue',
 	});
 }
 
@@ -60,7 +64,19 @@ function createWalkingParticle(layer) {
 	randomWalk(particle, layer);
 }
 
-function randomWalk(particle, layer) {
+function createWalkingGreenParticle(layer, options) {
+	const particle = makeParticle({
+		x: Math.random() * stage.width(),
+		y: Math.random() * stage.height(),
+		fill: 'green',
+		...options,
+	});
+
+	layer.add(particle);
+	randomWalk(particle, layer, {fill: 'red',});
+}
+
+function randomWalk(particle, layer, options) {
 	const anim = new Konva.Animation((frame) => {
 		const pos = {
 			x: particle.x(),
@@ -71,7 +87,7 @@ function randomWalk(particle, layer) {
 		if (isFixedAdjacent(Math.floor(pos.x), Math.floor(pos.y))) {
 			anim.stop();
 			layer.add(makeFixed(pos));
-			createWalkingParticle(layer);
+			createWalkingGreenParticle(layer, options);
 			particle.destroy();
 			layer.draw();
 			return;
@@ -81,15 +97,15 @@ function randomWalk(particle, layer) {
 		const yrand = Math.random();
 
 		if (xrand < 0.5) {
-			particle.x(pos.x + PARTICLE_SPEED)
+			particle.x(stayInsideStage(pos.x + PARTICLE_SPEED, 'x'))
 		} else {
-			particle.x(pos.x - PARTICLE_SPEED)
+			particle.x(stayInsideStage(pos.x - PARTICLE_SPEED, 'x'))
 		}
 
 		if (yrand < 0.5) {
-			particle.y(pos.y + PARTICLE_SPEED)
+			particle.y(stayInsideStage(pos.y + PARTICLE_SPEED, 'y'))
 		} else {
-			particle.y(pos.y - PARTICLE_SPEED)
+			particle.y(stayInsideStage(pos.y - PARTICLE_SPEED, 'y'))
 		}
 
 	}, layer);
@@ -126,4 +142,21 @@ function addToAdjacencyMap(x, y) {
 
 function isFixedAdjacent(x, y) {
 	return adjacencyMap[x] && adjacencyMap[x][y];
+}
+
+function stayInsideStage(n, axis) {
+	const width = stage.width();
+	const height = stage.height();
+
+	if (axis === 'x') {
+		if (n < 0) { return 0; }
+		if (n > width) { return width; }
+	}
+
+	if (axis === 'y') {
+		if (n < 0) { return 0; }
+		if (n > height) { return height; }
+	}
+
+	return n;
 }
