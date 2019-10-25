@@ -1,9 +1,10 @@
-const NUM_PARTICLES = 100000;
+const NUM_PARTICLES = 10000;
 const PARTICLE_SPEED = 2;
 const UPDATE_RATE = 10;	// milliseconds
 
 var canvas;
 const adjacencyMap = {};
+let isGrowing = true;
 
 function init() {
 	initCanvas();
@@ -71,6 +72,11 @@ function createWalker() {
 
 function startWalk(walker) {
 	function walk() {
+		if (!isGrowing) {
+			clearInterval(walk);
+			return;
+		}
+
 		if (isFixedAdjacent(Math.floor(walker.x), Math.floor(walker.y))) {
 			createFixedSegment(walker);
 			createWalker();	// Experimental - more walkers per surface area
@@ -116,4 +122,8 @@ function stayInsideCanvas(n, axis) {
 	}
 
 	return n;
+}
+
+function stopGrowing() {
+	isGrowing = false;
 }
