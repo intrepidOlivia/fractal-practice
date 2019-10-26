@@ -71,9 +71,10 @@ function createWalker() {
 }
 
 function startWalk(walker) {
+	let loopId;
 	function walk() {
 		if (!isGrowing) {
-			clearInterval(walk);
+			clearInterval(loopId);
 			return;
 		}
 
@@ -98,7 +99,7 @@ function startWalk(walker) {
 			walker.y = stayInsideCanvas(walker.y - PARTICLE_SPEED, 'y')
 		}
 	}
-	setInterval(walk, UPDATE_RATE);
+	loopId = setInterval(walk, UPDATE_RATE);
 }
 
 function restartWalk(walker) {

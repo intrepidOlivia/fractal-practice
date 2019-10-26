@@ -32,6 +32,14 @@ class Cathanvas {
 		this.context.stroke();
 	}
 
+	/**
+	 * Draws a set of lines
+	 * @param coordArray [from, to, from, to, from, to, from to]
+	 */
+	drawLines(coordArray) {
+
+	}
+
 	animate() {
 		// clear canvas
 
