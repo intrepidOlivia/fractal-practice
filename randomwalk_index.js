@@ -1,10 +1,12 @@
 const NUM_PARTICLES = 10000;
 const PARTICLE_SPEED = 2;
 const UPDATE_RATE = 10;	// milliseconds
+const COLOR_SHIFT_RATE = 3;
 
 var canvas;
 const adjacencyMap = {};
 let isGrowing = true;
+const color = [123, 123, 123];
 
 function init() {
 	initCanvas();
@@ -31,7 +33,52 @@ function initParticles() {
 
 function createFixedSegment(coords) {
 	addToAdjacencyMap(Math.floor(coords.x), Math.floor(coords.y));
-	canvas.drawDot(coords, '#FFFFFF');
+	canvas.drawDot(coords, `rgb(${color[0]},${color[1]},${color[2]})`);
+	mutateAllColors();
+}
+
+/**
+ * Mutates the color of the next pixel, one value (r, g, or b) at a time
+ */
+function mutateColor() {
+	// pick between r g and b
+	let val;
+	let roll = Math.random() * 3;
+	if (roll < 1) {
+		val = 0;
+	} else if (roll < 2) {
+		val = 1;
+	} else {
+		val = 2;
+	}
+
+	// increase value up or down an amount
+	roll = Math.random() * 2;
+	if (roll < 1) {
+		color[val] = stayInsideColor(color[val] + COLOR_SHIFT_RATE);
+	} else {
+		color[val] = stayInsideColor(color[val] - COLOR_SHIFT_RATE);
+	}
+}
+
+/**
+ * Mutates the color of the next pixel, all values (r, g, and b) at a time
+ */
+function mutateAllColors() {
+	for (let i = 0; i < color.length; i++) {
+		let roll = Math.random() * 2;
+		if (roll < 1) {
+			color[i] = stayInsideColor(color[i] + COLOR_SHIFT_RATE);
+		} else {
+			color[i] = stayInsideColor(color[i] - COLOR_SHIFT_RATE);
+		}
+	}
+}
+
+function stayInsideColor(value) {
+	if (value < 0) { return 0; }
+	if (value > 255) { return 255; }
+	return value;
 }
 
 function addToAdjacencyMap(x, y) {
@@ -52,6 +99,22 @@ function addToAdjacencyMap(x, y) {
 			x: x,
 			y: y - 1,
 		},
+		{
+			x: x + 1,
+			y: y + 1,
+		},
+		{
+			x: x + 1,
+			y: y - 1,
+		},
+		{
+			x: x - 1,
+			y: y + 1,
+		},
+		{
+			x: x - 1,
+			y: y - 1,
+		}
 	];
 	adj.forEach(point => {
 		if (adjacencyMap[point.x]) {
