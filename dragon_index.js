@@ -42,7 +42,7 @@ function iterateDragon() {
 
 	// offset all points by (initial point -> last point), then rotate around last point
 	// const offset = [dragon[dragon.length - 1][0] - dragon[0][0], dragon[dragon.length - 1][1] - dragon[0][1]]
-	// dragon = translate(dragon, offset);
+	// dragon = translate(newDragon, offset);
 }
 
 /**
@@ -65,18 +65,28 @@ function rotateClockwise(vector, angle=90) {
 	for (let i = 0; i < vector.length - 1; i += 2) {
 		// Move to center
 		let v = translate([vector[i], vector[i + 1]], offset);
+		v = transpose(v);	// transpose x and y
 
 		// Rotate around origin
 		const product = dotProduct(R, v);
 
 		// Move back to location
-		v = translate(product, [-offset[0], -offset[1]]);
+		v = transpose(translate(product, [-offset[0], -offset[1]]));
 
 		// Reassign value
 		vector[i] = v[0];
 		vector[i + 1] = v[1];
 	}
 	return vector;
+}
+
+/**
+ * [[x, y], [x, y]] -> [[x, x],[y, y]]
+ * [[x, x],[y, y]] -> [[x, y],[x, y]]
+ * @param v
+ */
+function transpose(v) {
+	return [[v[0][0], v[1][0]], [v[0][1], v[1][1]]];
 }
 
 
@@ -98,7 +108,7 @@ function dotProduct(source, target, rows) {
 
 	v2.push((source[1][0] * target[0][0]) + (source[1][1] * target[1][0]));
 	v2.push((source[1][0] * target[0][1]) + (source[1][1] * target[1][1]))
-	
+
 	return [v1, v2];
 }
 
