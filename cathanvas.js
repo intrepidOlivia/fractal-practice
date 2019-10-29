@@ -18,10 +18,10 @@ class Cathanvas {
 		this.context.fillRect(coords.x, coords.y, 1, 1);
 	}
 
-	drawLineFrom(source = this.center, target, style) {
+	drawLineFrom(source = [this.center.x, this.center.y], target, style) {
 		this.context.strokeStyle = style || '#FFFFFF';
-		this.context.moveTo(source.x, source.y);
-		this.context.lineTo(target.x, target.y);
+		this.context.moveTo(source[0], source[1]);
+		this.context.lineTo(target[0], target[1]);
 		this.context.stroke();
 	}
 
