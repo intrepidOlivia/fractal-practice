@@ -1,16 +1,17 @@
 let canvas;
 let dragon = [];
-let UNIT_LENGTH = 10;
+let UNIT_LENGTH = 5;
 const ANIM_RATE = 1000;
 const R = [[0, -1], [1, 0]];
 
 
-let animLoop;
+let animLoop = true;
 
 function init() {
 	initCanvas();
 	initDragon();
-	initAnimation();
+	// initAnimation();
+	initIntervalAnimation();
 }
 
 function initCanvas() {
@@ -26,7 +27,11 @@ function initDragon() {
 }
 
 function initAnimation() {
-	animLoop = setInterval(animateDragon, ANIM_RATE);
+	requestAnimationFrame(animateDragon);
+}
+
+function initIntervalAnimation() {
+	animLoop = setInterval(intervalAnimateDragon, ANIM_RATE);
 }
 
 function animateDragon() {
@@ -35,14 +40,23 @@ function animateDragon() {
 		canvas.drawLineFrom(dragon[i], dragon[i + 1], '#FFFFFF');
 	}
 	iterateDragon();
+	if (animLoop) {
+		requestAnimationFrame(animateDragon);
+	}
+}
+
+function intervalAnimateDragon() {
+	canvas.context.clearRect(0, 0, canvas.width, canvas.height);
+	for (let i = 0; i < dragon.length - 1; i += 2) {
+		canvas.drawLineFrom(dragon[i], dragon[i + 1], '#FFFFFF');
+	}
+	iterateDragon();
 }
 
 function iterateDragon() {
-	dragon = rotateClockwise(dragon);
-
-	// offset all points by (initial point -> last point), then rotate around last point
-	// const offset = [dragon[dragon.length - 1][0] - dragon[0][0], dragon[dragon.length - 1][1] - dragon[0][1]]
-	// dragon = translate(newDragon, offset);
+	const offset = [dragon[dragon.length - 1][0] - dragon[0][0], dragon[dragon.length - 1][1] - dragon[0][1]]
+	const nextDragon = translate(rotateClockwise(dragon), offset);
+	dragon = dragon.concat(nextDragon);
 }
 
 /**
@@ -114,4 +128,5 @@ function dotProduct(source, target, rows) {
 
 function stopGrowing() {
 	clearInterval(animLoop);
+	animLoop = false;
 }
