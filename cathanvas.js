@@ -15,7 +15,13 @@ class Cathanvas {
 		this.canvas.id = this.id;
 		this.context = this.canvas.getContext('2d');
 		this.container.appendChild(this.canvas);
+		this.bgStyle = options.bgStyle;
 		this.fillBg(options.bgStyle);
+	}
+
+	clearCanvas() {
+		this.context.clearRect(0, 0, this.width, this.height);
+		this.fillBg(this.bgStyle);
 	}
 
 	fillBg(style = '#000000') {

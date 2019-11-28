@@ -1,21 +1,43 @@
 let canvas;
 const SEED_SELECTIONS = 100;
-const ITERATIONS = 10;
+const ITERATIONS = 500;
+const START_DRAWING = 100;  // cycle at which iterations should start printing
+const TICK = 300;
 
 /**
  * Initial triangle - the functions here define the lines involved
  * @type {Array}
  */
-const seedShape = [
+const SEED_SHAPE_TRIANGLE = [
     (x) => (-2 * x) + 600,
     (x) => (3 * x) - 1200,
     (x) => 600,
 ];
 
-const TRANSFORMS = [
-    (coords) => translateCoords(scaleCoords(coords, 0.33), [0, -200]),
-    (coords) => translateCoords(scaleCoords(coords, 0.33), [-200, 200]),
-    (coords) => translateCoords(scaleCoords(coords, 0.33), [200, 200]),
+const SERPINSKI_TRANSFORMS = [
+    (coords) => translateCoords(scaleCoords(coords, 0.5), [0, -200]),
+    (coords) => translateCoords(scaleCoords(coords, 0.5), [-200, 200]),
+    (coords) => translateCoords(scaleCoords(coords, 0.5), [200, 200]),
+];
+
+const ALT_SERPINSKI = [
+    (coords) => translateCoords(scaleCoords(coords, 0.48), [-200, -200]),
+    (coords) => translateCoords(scaleCoords(coords, 0.48), [-200, 200]),
+    (coords) => translateCoords(scaleCoords(coords, 0.48), [200, -200]),
+    (coords) => translateCoords(scaleCoords(coords, 0.48), [200, 200]),
+];
+
+const AVAILABLE_FRACTALS = [
+    {
+        label: 'Serpinski Triangle',
+        shape: SEED_SHAPE_TRIANGLE,
+        transforms: SERPINSKI_TRANSFORMS,
+    },
+    {
+        label: 'Serpinski Square',
+        shape: SEED_SHAPE_TRIANGLE,
+        transforms: ALT_SERPINSKI,
+    },
 ];
 
 init();
@@ -27,27 +49,48 @@ init();
 
 function init() {
     initCanvas();
+    generateMenu();
+}
 
+function generateMenu() {
+    AVAILABLE_FRACTALS.forEach(config => {
+        const button = document.createElement('button');
+        button.className = 'fractalButton';
+        button.innerText = config.label;
+        button.onclick = () => drawFractal(config.shape, config.transforms);
+        const menu = document.getElementById('shapeSelection');
+        menu.appendChild(button);
+    });
+}
+
+function drawFractal(shape, transforms) {
+    requestAnimationFrame(() => canvas.clearCanvas());
     for (let i = 0; i < SEED_SELECTIONS; i++) {
-        let dot = pickRandomPoint(seedShape)
-        // canvas.drawDot(dot);
-        for (let i = 0; i < ITERATIONS; i++) {
-            const newDot = transformAndDraw(dot);
-            dot = newDot;
+        let dot = pickRandomPoint(shape);
+        setTimeout(() => extrapolateSeed(dot, transforms), 0);
+    }
+}
+
+function extrapolateSeed(dot, transforms) {
+    let d = dot;
+    for (let i = 0; i < ITERATIONS; i++) {
+        d = pickRandomTransform(transforms)(d);
+        if (i >= START_DRAWING) {
+            drawDot(d);
         }
     }
 }
 
-function transformAndDraw(dot) {
-    const transformedDot = pickRandomTransform(TRANSFORMS)(dot);
-    canvas.drawDot(transformedDot);
-    return transformedDot;
+function drawDot(dot) {
+    setTimeout(() => {
+        canvas.drawDot(dot);
+    }, TICK);
 }
 
 function initCanvas() {
-    canvas = new Cathanvas('root', {
-        width: 601,
-        height: 601,
+    canvas = new Cathanvas('canvasHolder', {
+        width: 800,
+        height: 800,
         bgStyle: '#003030',
     });
 }
