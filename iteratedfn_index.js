@@ -1,5 +1,6 @@
 let canvas;
-const seedPoints = [];
+const SEED_SELECTIONS = 100;
+const ITERATIONS = 10;
 
 /**
  * Initial triangle - the functions here define the lines involved
@@ -27,10 +28,10 @@ init();
 function init() {
     initCanvas();
 
-    for (let i = 0; i < 500; i++) {
+    for (let i = 0; i < SEED_SELECTIONS; i++) {
         let dot = pickRandomPoint(seedShape)
         // canvas.drawDot(dot);
-        for (let i = 0; i < 10; i++) {
+        for (let i = 0; i < ITERATIONS; i++) {
             const newDot = transformAndDraw(dot);
             dot = newDot;
         }
@@ -53,10 +54,15 @@ function initCanvas() {
 
 function scaleCoords(coords, factor) {
     const out = [];
-    for (let i = 0; i < coords.length; i++) {
-        out.push(coords[i] * factor);
+
+    // transform to origin
+    const offset = translateCoords(coords, [-canvas.width / 2, -canvas.height / 2])
+
+    for (let i = 0; i < offset.length; i++) {
+        out.push(offset[i] * factor);
     }
-    return out;
+
+    return translateCoords(out, [canvas.width / 2, canvas.height / 2]);
 }
 
 function translateCoords(coords, deltaCoords) {
@@ -64,6 +70,7 @@ function translateCoords(coords, deltaCoords) {
     for (let i = 0; i < coords.length; i++) {
         out.push(coords[i] + deltaCoords[i]);
     }
+
     return out;
 }
 
@@ -84,7 +91,9 @@ function pickRandomPoint(seedShape) {
     return [randX, randY];
 }
 
+
 function pickRandomTransform(transforms) {
     const rand = Math.floor(Math.random() * transforms.length);
+
     return transforms[rand];
 }
