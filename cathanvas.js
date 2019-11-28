@@ -1,4 +1,8 @@
 class Cathanvas {
+    /**
+     * @param containerID
+     * @param options Available properties: width, height, id, bgStyle
+     */
 	constructor(containerID, options = {}) {
 		this.container = document.getElementById(containerID);
 		this.width = options.width || 800;
@@ -11,11 +15,21 @@ class Cathanvas {
 		this.canvas.id = this.id;
 		this.context = this.canvas.getContext('2d');
 		this.container.appendChild(this.canvas);
+		this.fillBg(options.bgStyle);
 	}
 
-	drawDot(coords, style) {
-		this.context.fillStyle = style || '#FFFFFF';
-		this.context.fillRect(coords.x, coords.y, 1, 1);
+	fillBg(style = '#000000') {
+		this.context.fillStyle = style;
+		this.context.fillRect(0, 0, this.width, this.height);
+	}
+
+	drawDot(coords, style = '#FFFFFF') {
+		this.context.fillStyle = style;
+		if (coords.x && coords.y) {
+            this.context.fillRect(coords.x, coords.y, 1, 1);
+            return;
+		}
+		this.context.fillRect(coords[0], coords[1], 1, 1);
 	}
 
 	drawLineFrom(source = [this.center.x, this.center.y], target, style) {
