@@ -1,6 +1,6 @@
 let canvas;
 const SEED_SELECTIONS = 100;
-const ITERATIONS = 500;
+const ITERATIONS = 800;
 const START_DRAWING = 100;  // cycle at which iterations should start printing
 const TICK = 300;
 
@@ -21,10 +21,10 @@ const SERPINSKI_TRANSFORMS = [
 ];
 
 const ALT_SERPINSKI = [
-    (coords) => translateCoords(scaleCoords(coords, 0.48), [-200, -200]),
-    (coords) => translateCoords(scaleCoords(coords, 0.48), [-200, 200]),
-    (coords) => translateCoords(scaleCoords(coords, 0.48), [200, -200]),
-    (coords) => translateCoords(scaleCoords(coords, 0.48), [200, 200]),
+    (coords) => translateCoords(scaleCoords(coords, 0.47), [-200, -200]),
+    (coords) => translateCoords(scaleCoords(coords, 0.47), [-200, 200]),
+    (coords) => translateCoords(scaleCoords(coords, 0.47), [200, -200]),
+    (coords) => translateCoords(scaleCoords(coords, 0.47), [200, 200]),
 ];
 
 const AVAILABLE_FRACTALS = [

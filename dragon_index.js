@@ -103,8 +103,6 @@ function transpose(v) {
 	return [[v[0][0], v[1][0]], [v[0][1], v[1][1]]];
 }
 
-
-
 // [ x1, y1 ]
 // [ x2, y2 ]
 // NOTE: This function only works for two-column source, two-row target.

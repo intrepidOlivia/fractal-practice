@@ -15,8 +15,8 @@ function init() {
 
 function initCanvas() {
 	canvas = new Cathanvas('root', {
-		width: 500,
-		height: 500,
+		width: 1000,
+		height: 800,
 	});
 }
 
