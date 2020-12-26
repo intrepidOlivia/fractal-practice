@@ -12,7 +12,13 @@ Experimenting with "simulated" fractals via the Iterated Function System that se
 ## Screenshots
 
 Random Walk Fractal
+
 ![random-walk fractal](https://i.imgur.com/xKqLIsE.png)
 
 Dragon Fractal (not demoed)
+
 ![dragon fractal](https://i.imgur.com/p8ZfahH.png)
+
+IFS (Serpinski): 
+
+![serpinski fractal](https://i.imgur.com/WVSYujC.jpg)
